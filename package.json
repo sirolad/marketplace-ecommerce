@@ -20,7 +20,8 @@
     "prepare": "husky install",
     "docker:logs": "docker compose logs -f",
     "docker:ps": "docker compose ps",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "install:all": "npm install && npm install --workspaces"
   },
   "devDependencies": {
     "eslint": "^8.0.0",

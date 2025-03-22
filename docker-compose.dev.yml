@@ -1,39 +1,45 @@
 services:
   order-service:
+    command: npm run start:dev
+    environment:
+      NODE_ENV: development
+      DEBUG: order-service:*
+
+  invoice-service:
+    command: npm run start:dev
+    environment:
+      NODE_ENV: development
+      DEBUG: invoice-service:*
+
+  # Development-specific database configurations
+  order-db:
+    command: mongod --logpath /dev/null # Reduce log verbosity in development
+
+  invoice-db:
+    command: mongod --logpath /dev/null # Reduce log verbosity in development
+
+  # Development-specific RabbitMQ configurations
+  rabbitmq:
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{default,error}]
     build:
-      target: development
+      context: ./order-service
+      target: ${NODE_ENV:-development}
+    ports:
+      - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
+    env_file:
+      - .env
+      - ./order-service/.env
     volumes:
       - ./order-service:/usr/src/app
       - /usr/src/app/node_modules
-    environment:
-      - NODE_ENV=development
-      - DEBUG=order-service:*
-    ports:
-      - "9229:9229"  # Debug port
-    command: npm run dev
-
-  invoice-service:
-    build:
-      target: development
-    volumes:
-      - ./invoice-service:/usr/src/app
-      - /usr/src/app/node_modules
-      - invoice-uploads:/usr/src/app/uploads
-    environment:
-      - NODE_ENV=development
-      - DEBUG=invoice-service:*
-    ports:
-      - "9230:9229"  # Debug port mapped to a different local port
-    command: npm run dev
-
-  order-db:
-    ports:
-      - "27017:27017"
-
-  invoice-db:
-    ports:
-      - "27018:27017"
-
-  rabbitmq:
-    ports:
-      - "15672:15672"
+    depends_on:
+      - order-db
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${ORDER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped

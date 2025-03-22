@@ -2,11 +2,15 @@ services:
   order-service:
     build:
       context: ./order-service
+      target: ${NODE_ENV:-development}
     ports:
       - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
     env_file:
       - .env
       - ./order-service/.env
+    volumes:
+      - ./order-service:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - order-db
       - rabbitmq
@@ -21,12 +25,15 @@ services:
   invoice-service:
     build:
       context: ./invoice-service
+      target: ${NODE_ENV:-development}
     ports:
       - "${INVOICE_SERVICE_PORT}:${INVOICE_SERVICE_PORT}"
     env_file:
       - .env
       - ./invoice-service/.env
     volumes:
+      - ./invoice-service:/usr/src/app
+      - /usr/src/app/node_modules
       - invoice-uploads:/usr/src/app/uploads
     depends_on:
       - invoice-db
