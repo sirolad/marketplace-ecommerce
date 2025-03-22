@@ -2,11 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as helmet from 'helmet';
-import * as morgan from 'morgan';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Use FastifyAdapter instead of Express
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter()
+  );
   
   // Get configuration service
   const configService = app.get(ConfigService);
@@ -22,9 +27,13 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
   
-  // Apply middleware
-  app.use(helmet());
-  app.use(morgan('dev'));
+  // Apply Fastify plugins
+  await app.register(fastifyHelmet);
+  await app.register(fastifyMultipart, {
+    limits: {
+      fileSize: configService.get<number>('MAX_FILE_SIZE', 5 * 1024 * 1024), // 5MB default
+    },
+  });
   
   // Enable CORS
   app.enableCors();
@@ -32,7 +41,7 @@ async function bootstrap() {
   // Get port from environment variable
   const port = configService.get<number>('INVOICE_SERVICE_PORT', 3001);
   
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`Invoice service running on port ${port}`);
 }
 
