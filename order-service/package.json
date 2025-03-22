@@ -1,0 +1,37 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "description": "Microservice for managing orders in the marketplace",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "order",
+    "microservice",
+    "nodejs",
+    "typescript",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "typescript": "^5.1.6",
+    "mongodb": "^5.7.0",
+    "amqplib": "^0.10.3",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "@types/express": "^4.17.17",
+    "@types/amqplib": "^0.10.1",
+    "@types/node": "^20.4.6"
+  }
+}

@@ -1,0 +1,39 @@
+services:
+  order-service:
+    build:
+      target: development
+    volumes:
+      - ./order-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DEBUG=order-service:*
+    ports:
+      - "9229:9229"  # Debug port
+    command: npm run dev
+
+  invoice-service:
+    build:
+      target: development
+    volumes:
+      - ./invoice-service:/usr/src/app
+      - /usr/src/app/node_modules
+      - invoice-uploads:/usr/src/app/uploads
+    environment:
+      - NODE_ENV=development
+      - DEBUG=invoice-service:*
+    ports:
+      - "9230:9229"  # Debug port mapped to a different local port
+    command: npm run dev
+
+  order-db:
+    ports:
+      - "27017:27017"
+
+  invoice-db:
+    ports:
+      - "27018:27017"
+
+  rabbitmq:
+    ports:
+      - "15672:15672"

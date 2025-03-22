@@ -1,0 +1,101 @@
+services:
+  order-service:
+    build:
+      context: ./order-service
+    ports:
+      - "${ORDER_SERVICE_PORT}:${ORDER_SERVICE_PORT}"
+    env_file:
+      - .env
+      - ./order-service/.env
+    depends_on:
+      - order-db
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${ORDER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+  invoice-service:
+    build:
+      context: ./invoice-service
+    ports:
+      - "${INVOICE_SERVICE_PORT}:${INVOICE_SERVICE_PORT}"
+    env_file:
+      - .env
+      - ./invoice-service/.env
+    volumes:
+      - invoice-uploads:/usr/src/app/uploads
+    depends_on:
+      - invoice-db
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${INVOICE_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+  order-db:
+    image: mongo:latest
+    volumes:
+      - order-db-data:/data/db
+    env_file:
+      - .env
+    ports:
+      - "${MONGODB_PORT}:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  invoice-db:
+    image: mongo:latest
+    volumes:
+      - invoice-db-data:/data/db
+    env_file:
+      - .env
+    ports:
+      - "27018:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  order-db-data:
+  invoice-db-data:
+  invoice-uploads:
+  rabbitmq-data:
+
+networks:
+  default:
+    name: marketplace-network
+    driver: bridge
+
