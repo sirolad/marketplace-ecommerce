@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Invoice extends Document {
   @Prop({ required: true })
-  orderId: string;
+  orderId: string = '';
 
   @Prop({ required: true })
-  filePath: string;
+  filePath: string = '';
 
   @Prop()
   sentAt?: Date;

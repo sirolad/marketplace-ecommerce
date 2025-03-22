@@ -4,7 +4,7 @@ import { InvoicesController } from './invoices.controller';
 import { InvoicesService } from './invoices.service';
 import { Invoice, InvoiceSchema } from './schemas/invoice.schema';
 import { RabbitMQModule } from '../rabbitmq/rabbitmq.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { FastifyMulterModule } from '@fastify/multer';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -13,7 +13,7 @@ import { extname } from 'path';
     MongooseModule.forFeature([
       { name: Invoice.name, schema: InvoiceSchema },
     ]),
-    MulterModule.register({
+    FastifyMulterModule.register({
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {

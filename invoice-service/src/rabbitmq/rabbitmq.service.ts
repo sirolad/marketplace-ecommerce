@@ -15,7 +15,7 @@ export class RabbitMQService implements OnModuleInit {
       console.log('Connected to RabbitMQ');
       
       // Subscribe to order.shipped.with.invoice events
-      this.client.subscribe('order.shipped.with.invoice', async (data: { orderId: string }) => {
+      (this.client as any).subscribe('order.shipped.with.invoice', async (data: { orderId: string }) => {
         console.log('Received order.shipped.with.invoice event:', data);
         try {
           // Mark invoice as sent

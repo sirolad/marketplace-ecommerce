@@ -33,7 +33,7 @@ async function bootstrap() {
     limits: {
       fileSize: configService.get<number>('MAX_FILE_SIZE', 5 * 1024 * 1024), // 5MB default
     },
-  });
+  } as any);
   
   // Enable CORS
   app.enableCors();

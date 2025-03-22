@@ -8,8 +8,8 @@ import {
   UploadedFile,
   Res,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
+import { FastifyFileInterceptor } from '@nestjs/platform-fastify';
+import { FastifyReply } from 'fastify';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { InvoicesService } from './invoices.service';
@@ -21,7 +21,7 @@ export class InvoicesController {
 
   @Post()
   @UseInterceptors(
-    FileInterceptor('file', {
+    FastifyFileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -42,7 +42,7 @@ export class InvoicesController {
   )
   create(
     @Body() createInvoiceDto: CreateInvoiceDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
   ) {
     return this.invoicesService.create(createInvoiceDto, file);
   }
@@ -55,9 +55,12 @@ export class InvoicesController {
   @Get('download/:orderId')
   async downloadInvoice(
     @Param('orderId') orderId: string,
-    @Res() res: Response,
+    @Res() res: FastifyReply,
   ) {
     const file = await this.invoicesService.getInvoiceFile(orderId);
-    return res.download(file.path, file.filename);
+    return res.status(200).sendFile(file.path, { 
+      filename: file.filename,
+      contentDisposition: `attachment; filename="${file.filename}"` 
+    });
   }
 }
