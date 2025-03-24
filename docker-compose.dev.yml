@@ -1,4 +1,18 @@
 services:
+  nginx:
+    image: nginx:latest
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ./entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: /entrypoint.sh
+    depends_on:
+      - order-service
+      - invoice-service
+
   order-service:
     command: npm run start:dev
     environment:

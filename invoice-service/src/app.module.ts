@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { InvoicesModule } from './invoices/invoices.module';
-import { HealthModule } from './health/health.module';
-import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -11,16 +9,8 @@ import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
       isGlobal: true,
       envFilePath: ['.env', '../.env'],
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('INVOICE_MONGODB_URI'),
-      }),
-    }),
-    InvoicesModule,
-    HealthModule,
-    RabbitMQModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

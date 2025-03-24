@@ -10,6 +10,19 @@
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module"
+  },
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "no-console": "off",
+    "no-constant-condition": "off",
+    "no-empty": "off",
+    "no-prototype-builtins": "off",
+    "no-async-promise-executor": "off",
+    "no-irregular-whitespace": "off",
+    "no-unsafe-negation": "off",
+    "no-useless-escape": "off"
   }
 }
 

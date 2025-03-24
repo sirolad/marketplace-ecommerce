@@ -12,7 +12,7 @@ RUN mkdir -p uploads && chmod 777 uploads
 EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start:dev"]
 
 # Production stage
 FROM base AS production

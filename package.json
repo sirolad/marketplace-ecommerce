@@ -17,18 +17,20 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml}\"",
     "build": "npm run build --workspaces",
-    "prepare": "husky install",
     "docker:logs": "docker compose logs -f",
     "docker:ps": "docker compose ps",
     "lint-staged": "lint-staged",
     "install:all": "npm install && npm install --workspaces"
   },
   "devDependencies": {
+    "@types/node": "^22.13.11",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
+    "lint-staged": "^15.1.0",
     "prettier": "^2.0.0",
-    "husky": "^9.0.6",
-    "lint-staged": "^15.1.0"
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
